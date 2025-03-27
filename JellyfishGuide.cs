@@ -8,7 +8,6 @@ public class JellyfishGuide : MonoBehaviour
     // UI Elements
     public GameObject dialogueUI;
     public GameObject interactUI;
-    public GameObject[] surveySliders; // Assign all 3 sliders in Inspector
     public TMPro.TextMeshProUGUI dialogueText;
 
     // State
@@ -31,10 +30,9 @@ public class JellyfishGuide : MonoBehaviour
     void Start()
     {
         // Hide all UI initially
-        dialogueUI.SetActive(false);
+        dialogueUI.SetActive(true);
         interactUI.SetActive(false);
-        foreach (var slider in surveySliders)
-            slider.SetActive(false);
+
 
         ShowCurrentDialogue();
     }
@@ -43,14 +41,6 @@ public class JellyfishGuide : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E)) return;
 
-        if (surveyActive)
-        {
-            AdvanceSurvey();
-        }
-        else
-        {
-            AdvanceDialogue();
-        }
     }
 
     void AdvanceDialogue()
@@ -77,25 +67,8 @@ public class JellyfishGuide : MonoBehaviour
     void StartSurvey()
     {
         surveyActive = true;
-        surveySliders[0].SetActive(true); // Show first slider
+
         dialogueUI.SetActive(false);
-    }
-
-    void AdvanceSurvey()
-    {
-        // Hide current slider
-        surveySliders[currentStep - 1].SetActive(false);
-
-        // Show next slider or finish
-        if (currentStep - 1 < surveySliders.Length - 1)
-        {
-            surveySliders[currentStep].SetActive(true);
-            currentStep++;
-        }
-        else
-        {
-            EndSurvey();
-        }
     }
 
     void EndSurvey()
