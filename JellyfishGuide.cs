@@ -16,7 +16,7 @@ public class JellyfishGuide : MonoBehaviour
     private bool surveyActive = false;
 
     private string[] dialogues = {
-        "Welcome! Move with thumbstick, interact with trigger",
+        "Welcome! please answer our survey",
         "Let's do a quick survey (Press trigger)",
         "Survey complete! (Press trigger)",
         "Press menu button to begin"
