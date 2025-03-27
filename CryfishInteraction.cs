@@ -30,17 +30,27 @@ public class CrayfishInteraction : MonoBehaviour
     private bool AnyVRInputPressed()
     {
         // Check all common VR controller buttons
-        for (int i = 0; i < 20; i++) // Check first 20 button indices
-        {
-            if (Input.GetKeyDown("joystick button " + i))
-            {
-                Debug.Log($"Button {i} pressed");
-                return true;
-            }
-        }
-
-        // Also check keyboard E for testing
-        return Input.GetKeyDown(KeyCode.E);
+        return Input.GetKeyDown(KeyCode.JoystickButton0) ||  // Typically 'A' on Oculus, 'X' on Vive
+               Input.GetKeyDown(KeyCode.JoystickButton1) ||  // Typically 'B' on Oculus, 'Y' on Vive
+               Input.GetKeyDown(KeyCode.JoystickButton2) ||  // Typically 'X' on Oculus, unused on Vive
+               Input.GetKeyDown(KeyCode.JoystickButton3) ||  // Typically 'Y' on Oculus, unused on Vive
+               Input.GetKeyDown(KeyCode.JoystickButton4) ||  // Typically left shoulder button
+               Input.GetKeyDown(KeyCode.JoystickButton5) ||  // Typically right shoulder button
+               Input.GetKeyDown(KeyCode.JoystickButton6) ||  // Typically left stick click
+               Input.GetKeyDown(KeyCode.JoystickButton7) ||  // Typically right stick click
+               Input.GetKeyDown(KeyCode.JoystickButton8) ||  // Often start button
+               Input.GetKeyDown(KeyCode.JoystickButton9) ||  // Often back/select button
+               Input.GetKeyDown(KeyCode.JoystickButton10) || // Sometimes left controller menu
+               Input.GetKeyDown(KeyCode.JoystickButton11) || // Sometimes right controller menu
+               Input.GetKeyDown(KeyCode.JoystickButton12) || // Extra buttons
+               Input.GetKeyDown(KeyCode.JoystickButton13) ||
+               Input.GetKeyDown(KeyCode.JoystickButton14) ||
+               Input.GetKeyDown(KeyCode.JoystickButton15) ||
+               Input.GetKeyDown(KeyCode.JoystickButton16) ||
+               Input.GetKeyDown(KeyCode.JoystickButton17) ||
+               Input.GetKeyDown(KeyCode.JoystickButton18) ||
+               Input.GetKeyDown(KeyCode.JoystickButton19) ||
+               Input.GetKeyDown(KeyCode.E); // Keyboard fallback
     }
 
     private void StartInteraction()
