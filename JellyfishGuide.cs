@@ -17,6 +17,9 @@ public class JellyfishGuide : MonoBehaviour
     public GameObject Slider3;
     public TMPro.TextMeshProUGUI dialogueText;
 
+    // Survey Manager Reference
+    private MultiSliderManager sliderManager;
+
     // State Tracking
     private int dialogueStep = 0;
     private bool isInteracting = false;
@@ -25,16 +28,16 @@ public class JellyfishGuide : MonoBehaviour
     private int currentSurveyQuestion = 0;
 
     private string[] dialogues = {
-        "Welcome! Let's learn VR movement. Push the thumbstick forward to move.", // 0
-        "Now try turning by rotating the thumbstick left/right.", // 1
-        "Anything with ! above them is interactable. Try finding something and interact with it. Go close to it and press the trigger. (Press trigger to continue)", // 2
-        "Great job! Before we begin, we want to gauge your understanding of climate change first. (PRESS TRIGGER)", // 3
-        "Question 1: How concerned are you about climate change's impact on ocean life? (1 = Not concerned at all, 5 = Extremely concerned)", // 4
-        "Question 2: How much do you feel connected to species affected by climate change? (1 = Not connected, 5 = Strongly connected)", // 5
-        "Question 3: How likely are you to take action to help prevent ocean damage? (1 = Not likely, 5 = Very likely)", // 6
-        "I will appear later to check up on you. (Press trigger)", // 7
-        "The red box shows quests, green shows data, and yellow points the way. (Press trigger)", // 8
-        "Try to do quests in order. Press the menu button to start.", // 9
+        "Welcome! Let's learn VR movement. Push the thumbstick forward to move.",
+        "Now try turning by rotating the thumbstick left/right.",
+        "Anything with ! above them is interactable. Try finding something and interact with it. Go close to it and press the trigger. (Press trigger to continue)",
+        "Great job! Before we begin, we want to gauge your understanding of climate change first. (PRESS TRIGGER)",
+        "Question 1: How concerned are you about climate change's impact on ocean life? (1 = Not concerned at all, 5 = Extremely concerned)",
+        "Question 2: How much do you feel connected to species affected by climate change? (1 = Not connected, 5 = Strongly connected)",
+        "Question 3: How likely are you to take action to help prevent ocean damage? (1 = Not likely, 5 = Very likely)",
+        "I will appear later to check up on you. (Press trigger)",
+        "The red box shows quests, green shows data, and yellow points the way. (Press trigger)",
+        "Try to do quests in order. Press the menu button to start.",
     };
 
     void Awake()
@@ -45,6 +48,7 @@ public class JellyfishGuide : MonoBehaviour
 
     void Start()
     {
+        sliderManager = FindObjectOfType<MultiSliderManager>(); // Find the survey system
         InitializeUI();
         ShowDialogue();
     }
@@ -76,33 +80,22 @@ public class JellyfishGuide : MonoBehaviour
     {
         switch (dialogueStep)
         {
-            case 0: // Move forward
+            case 0:
+            case 1:
                 if (AnyVRInputPressed()) NextDialogue();
                 break;
-
-            case 1: // Turning
+            case 2:
+                if (AnyVRInputPressed()) StartCoroutine(EnableInteractionMode());
+                break;
+            case 3:
+                if (AnyVRInputPressed()) StartSurvey();
+                break;
+            case 7:
+            case 8:
                 if (AnyVRInputPressed()) NextDialogue();
                 break;
-
-            case 2: // Interaction instruction
-                if (AnyVRInputPressed())
-                    StartCoroutine(EnableInteractionMode());
-                break;
-
-            case 3: // Start survey
-                if (AnyVRInputPressed())
-                    StartSurvey();
-                break;
-
-            case 7: // Post-survey instructions
-            case 8: // UI explanation
-                if (Input.GetKeyDown(KeyCode.JoystickButton15))
-                    NextDialogue();
-                break;
-
-            case 9: // Start game
-                if (AnyVRInputPressed())
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            case 9:
+                if (AnyVRInputPressed()) SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 break;
         }
     }
@@ -140,12 +133,13 @@ public class JellyfishGuide : MonoBehaviour
         dialogueText.text = dialogues[dialogueIndex];
     }
 
-    void CompleteSurvey()
+    public void CompleteSurvey()
     {
         surveyInProgress = false;
         Slider1.SetActive(false);
         Slider2.SetActive(false);
         Slider3.SetActive(false);
+
         dialogueStep = 7;
         ShowDialogue();
     }
@@ -192,7 +186,7 @@ public class JellyfishGuide : MonoBehaviour
             dialogueText.text = dialogues[dialogueStep];
             dialogueUI.SetActive(true);
 
-            if (dialogueStep == 8) // When explaining UI elements
+            if (dialogueStep == 8)
             {
                 questUI.SetActive(true);
                 dataUI.SetActive(true);
@@ -209,27 +203,29 @@ public class JellyfishGuide : MonoBehaviour
 
     private bool AnyVRInputPressed()
     {
-        // Check all common VR controller buttons
-        return Input.GetKeyDown(KeyCode.JoystickButton0) ||  // Typically 'A' on Oculus, 'X' on Vive
-               Input.GetKeyDown(KeyCode.JoystickButton1) ||  // Typically 'B' on Oculus, 'Y' on Vive
-               Input.GetKeyDown(KeyCode.JoystickButton2) ||  // Typically 'X' on Oculus, unused on Vive
-               Input.GetKeyDown(KeyCode.JoystickButton3) ||  // Typically 'Y' on Oculus, unused on Vive
-               Input.GetKeyDown(KeyCode.JoystickButton4) ||  // Typically left shoulder button
-               Input.GetKeyDown(KeyCode.JoystickButton5) ||  // Typically right shoulder button
-               Input.GetKeyDown(KeyCode.JoystickButton6) ||  // Typically left stick click
-               Input.GetKeyDown(KeyCode.JoystickButton7) ||  // Typically right stick click
-               Input.GetKeyDown(KeyCode.JoystickButton8) ||  // Often start button
-               Input.GetKeyDown(KeyCode.JoystickButton9) ||  // Often back/select button
-               Input.GetKeyDown(KeyCode.JoystickButton10) || // Sometimes left controller menu
-               Input.GetKeyDown(KeyCode.JoystickButton11) || // Sometimes right controller menu
-               Input.GetKeyDown(KeyCode.JoystickButton12) || // Extra buttons
+        return Input.GetKeyDown(KeyCode.JoystickButton0) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton1) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton2) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton3) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton4) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton5) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton6) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton7) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton8) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton9) ||  
+               Input.GetKeyDown(KeyCode.JoystickButton10) || 
+               Input.GetKeyDown(KeyCode.JoystickButton11) || 
+               Input.GetKeyDown(KeyCode.JoystickButton12) || 
                Input.GetKeyDown(KeyCode.JoystickButton13) ||
                Input.GetKeyDown(KeyCode.JoystickButton14) ||
                Input.GetKeyDown(KeyCode.JoystickButton15) ||
-               Input.GetKeyDown(KeyCode.JoystickButton16) ||
-               Input.GetKeyDown(KeyCode.JoystickButton17) ||
-               Input.GetKeyDown(KeyCode.JoystickButton18) ||
-               Input.GetKeyDown(KeyCode.JoystickButton19) ||
-               Input.GetKeyDown(KeyCode.E); // Keyboard fallback
+               Input.GetKeyDown(KeyCode.E); 
+    }
+
+    // Called when the Confirm Button is pressed
+    public void OnConfirmSurvey()
+    {
+        sliderManager.ConfirmValues();
+        CompleteSurvey();
     }
 }
