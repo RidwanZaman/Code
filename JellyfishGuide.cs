@@ -77,20 +77,20 @@ public class JellyfishGuide : MonoBehaviour
         switch (dialogueStep)
         {
             case 0: // Move forward
-                if (Input.GetAxis("Vertical") > 0.5f) NextDialogue();
+                if (AnyVRInputPressed()) NextDialogue();
                 break;
 
             case 1: // Turning
-                if (Mathf.Abs(Input.GetAxis("Horizontal")) > 0.5f) NextDialogue();
+                if (AnyVRInputPressed()) NextDialogue();
                 break;
 
             case 2: // Interaction instruction
-                if (Input.GetKeyDown(KeyCode.JoystickButton15))
+                if (AnyVRInputPressed())
                     StartCoroutine(EnableInteractionMode());
                 break;
 
             case 3: // Start survey
-                if (Input.GetKeyDown(KeyCode.JoystickButton15))
+                if (AnyVRInputPressed())
                     StartSurvey();
                 break;
 
@@ -101,7 +101,7 @@ public class JellyfishGuide : MonoBehaviour
                 break;
 
             case 9: // Start game
-                if (Input.GetKeyDown(KeyCode.JoystickButton7))
+                if (AnyVRInputPressed())
                     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 break;
         }
